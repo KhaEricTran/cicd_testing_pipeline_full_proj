@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>RMIT Store | Group 7</title>
+        <title>RMIT Store</title>
 
         <!-- Favicon -->
         <link rel="icon" href="img/favicon.jpg" type="image/png" />
@@ -76,7 +76,7 @@
             <div class="slider_inner">
                 <div class="image-change">
                     <h2 class="wow fadeInUp animated">Global University</h2>
-                    <h5 class="wow fadeIn animated" data-wow-delay="0.2s">Buy swags at Our Store!</h5>
+                    <h5 class="wow fadeIn animated" data-wow-delay="0.2s">Buy at Our Store</h5>
                     <a class="learn-more wow fadeInU" data-wow-delay="0.3s" href="#item-list">Buy Now!</a>
                 </div>
             </div>
@@ -85,31 +85,54 @@
 
         <section class="rmit-store-section row">
             <div class="check_tittle wow fadeInUp" data-wow-delay="0.4s" id="item-list">
-                <h2>Our Store</h2>
+                <h2>Our Store at 2:31pm</h2>
             </div>
             <div class="row rmit-product-section">
               <?php
-                require_once './src/Task.php';
-                $task = new Task();
-                $products = $task->getAllTasks();
-          
-                  for ($row = 0; $row < count($products); $row++)  { ?>
-                    <div class="col-md-3 col-sm-5 product-content">
-                        <?php echo '<img src="img/' .
-                            $products[$row]["ImageUrl"] .
-                            '" alt="">'; ?>
-                        <div class="media">
-                            <div class="media-left">
+              $link = mysqli_connect(
+                  "rmit-store.c9kica0o89u0.us-east-1.rds.amazonaws.com",
+                  "db_admin",
+                  "rmit_password",
+                  "rmit_store_db"
+              );
+              if ($link) {
+                  $res = mysqli_query($link, "select * from stores;");
+                  while ($row = mysqli_fetch_assoc($res)) { ?>
 
-                            </div>
-                            <div class="media-body">
-                                <a href="#"><?php echo $products[$row]["Name"]; ?></a>
-                                <p><?php echo $products[$row]["Price"]; ?> AUD</p>
-                            </div>
+
+                <div class="col-md-3 col-sm-5 product-content">
+                    <?php echo '<img src="img/' .
+                        $row["ImageUrl"] .
+                        '" alt="">'; ?>
+                    <div class="media">
+                        <div class="media-left">
+
+                        </div>
+                        <div class="media-body">
+                            <a href="#"><?php echo $row["Name"]; ?></a>
+                            <p><?php echo $row["Price"]; ?> AUD</p>
                         </div>
                     </div>
-                    <?php }
+                </div>
+
+                <?php }
+              } else {
+                   ?>
+                <div style="width: 100%">
+                <div class="error-content">
+
+                    <h1>Database connection error</h1>
+                    <p>
+                    <?php echo mysqli_connect_errno() .
+                        ":" .
+                        mysqli_connect_error(); ?>
+                    </p>
+                  </div>
+                  </div>
+                  <?php
+              }
               ?>
+
 
             </div>
         </section>

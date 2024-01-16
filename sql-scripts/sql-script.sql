@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS rmit_store_db;
+
+CREATE DATABASE rmit_store_db;
 USE rmit_store_db;
 
 CREATE TABLE stores (
@@ -10,7 +13,7 @@ CREATE TABLE stores (
 
 INSERT INTO stores (Name, Price, ImageUrl) 
 VALUES 
-  ("Fairtrade Pocket Hoodie", "64.95", "p-1.jpg"),
+  ("This is a test", "64.95", "p-1.jpg"),
   ("Fairtrade Zip Hoodie", "59.95", "p-2.jpg"), 
   ("Rudby Jergy", "69.95", "p-3.jpg"), 
   ("Topaz Premium Zip Jacket", "34.95", "p-4.jpg"), 
