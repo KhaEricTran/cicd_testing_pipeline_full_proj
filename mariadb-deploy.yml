@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deploy
+  labels:
+    name: mariadb-deploy
+    app: demo-store-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: mariadb-pod
+      app: demo-store-app
+    
+  template:
+    metadata:
+      name: mariadb-pod
+      labels:
+        name: mariadb-pod
+        app: demo-store-app
+    spec:
+      containers:
+      - name: mariadb
+        image: 959445117732.dkr.ecr.us-east-1.amazonaws.com/mariadb
+        env:
+        - name: MYSQL_USER
+          value: "db_admin"
+        - name:  MYSQL_PASSWORD
+          value: "rmit_password"
+        - name: MYSQL_ROOT_HOST
+          value: "%"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "rmit_password"
+        ports:
+        - containerPort: 3306
+     
