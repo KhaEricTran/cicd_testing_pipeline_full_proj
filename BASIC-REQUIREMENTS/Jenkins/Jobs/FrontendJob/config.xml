@@ -34,18 +34,21 @@
         <hudson.tasks.Shell>
             <command>
 <![CDATA[
-ECR_REPO_URI=959445117732.dkr.ecr.us-east-1.amazonaws.com/rmitstore
+# Updated to use Docker Hub
+DOCKER_HUB_REPO_URI=3750945/rmitstore
 
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO_URI
+# Docker Hub login (consider a more secure approach for credentials)
+echo "040421Ed!" | docker login --username 3750945 --password-stdin
 
-docker build -t $ECR_REPO_URI .
+# Build and push to Docker Hub
+docker build -t $DOCKER_HUB_REPO_URI:latest .
+docker push $DOCKER_HUB_REPO_URI:latest
 
-docker push $ECR_REPO_URI:latest
-
+# Apply Kubernetes configurations
 kubectl apply -f rmit-store-deploy.yml
-
 kubectl apply -f rmit-store-service.yml
 
+# Restart deployment
 kubectl rollout restart deployment/store-app-deploy
 ]]>
             </command>

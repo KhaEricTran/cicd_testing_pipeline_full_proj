@@ -34,18 +34,21 @@
         <hudson.tasks.Shell>
             <command>
 <![CDATA[
-DB_REPO_URI=959445117732.dkr.ecr.us-east-1.amazonaws.com/mariadb
+# Updated to use Docker Hub
+DB_REPO_URI=3750945/mariadb
 
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DB_REPO_URI
+# Docker Hub login (consider a more secure approach for credentials)
+echo "040421Ed!" | docker login --username 3750945 --password-stdin
 
+# Build and push to Docker Hub
 docker build -t $DB_REPO_URI:latest .
-
 docker push $DB_REPO_URI:latest
 
+# Apply Kubernetes configurations
 kubectl apply -f mariadb-deploy.yml
-
 kubectl apply -f mariadb-service.yml
 
+# Restart deployment
 kubectl rollout restart deployment/mariadb-deploy
 ]]>
             </command>
