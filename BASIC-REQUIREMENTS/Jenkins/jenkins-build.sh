@@ -1,6 +1,6 @@
-JENKINS_REPO_URI=959445117732.dkr.ecr.us-east-1.amazonaws.com/jenkins
+JENKINS_REPO_URI=3750945/jenkins
 
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $JENKINS_REPO_URI
+echo "040421Ed!" | docker login --username 3750945 --password-stdin
 
 docker build --build-arg DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3) -t jenkins .
 
