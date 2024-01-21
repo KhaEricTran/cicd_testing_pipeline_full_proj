@@ -6,7 +6,7 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: s3963207_asm2_key
+      KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
@@ -25,17 +25,17 @@ Resources:
           echo '
           #!/bin/bash
 
-          # Check if COSC2767-RMIT-Store/ exists
-          if [ -d "COSC2767-RMIT-Store" ]; then
-              echo "Removing COSC2767-RMIT-Store/..."
-              rm -rf COSC2767-RMIT-Store/
-              echo "COSC2767-RMIT-Store/ removed."
+          # Check if cicd_testing_pipeline_full_proj/ exists
+          if [ -d "cicd_testing_pipeline_full_proj" ]; then
+              echo "Removing cicd_testing_pipeline_full_proj/..."
+              rm -rf cicd_testing_pipeline_full_proj/
+              echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
+          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
-          # Navigate to the COSC2767-RMIT-Store directory
-          cd ~/COSC2767-RMIT-Store/utilities
+          # Navigate to the cicd_testing_pipeline_full_proj directory
+          cd ~/cicd_testing_pipeline_full_proj/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -53,7 +53,7 @@ Resources:
           fi
 
           # Setup Maven
-          source /root/COSC2767-RMIT-Store/utilities/maven/maven_install.sh
+          source /root/cicd_testing_pipeline_full_proj/utilities/maven/maven_install.sh
 
           # Source .bashrc to apply changes
           source ~/.bashrc
@@ -147,7 +147,7 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: s3963207_asm2_key
+      KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
         - AnsibleSecurityGroup
       Tags:
@@ -164,25 +164,25 @@ Resources:
           sudo su -
 
           echo "source /root/init_repo.sh" >> /root/.bashrc
-          echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
+          echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
 
           echo '
           #!/bin/bash
 
-          # Check if COSC2767-RMIT-Store/ exists
-          if [ -d "COSC2767-RMIT-Store" ]; then
-              echo "Removing COSC2767-RMIT-Store/..."
-              rm -rf COSC2767-RMIT-Store/
-              echo "COSC2767-RMIT-Store/ removed."
+          # Check if cicd_testing_pipeline_full_proj/ exists
+          if [ -d "cicd_testing_pipeline_full_proj" ]; then
+              echo "Removing cicd_testing_pipeline_full_proj/..."
+              rm -rf cicd_testing_pipeline_full_proj/
+              echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
+          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
-          sudo cp /root/COSC2767-RMIT-Store/utilities/ansible/apachePlaybook.yml /root/ --force
-          sudo cp /root/COSC2767-RMIT-Store/utilities/ansible/kubectlPlaybook.yml /root/ --force
+          sudo cp /root/cicd_testing_pipeline_full_proj/utilities/ansible/apachePlaybook.yml /root/ --force
+          sudo cp /root/cicd_testing_pipeline_full_proj/utilities/ansible/kubectlPlaybook.yml /root/ --force
 
-          # Navigate to the COSC2767-RMIT-Store directory
-          cd ~/COSC2767-RMIT-Store/utilities
+          # Navigate to the cicd_testing_pipeline_full_proj directory
+          cd ~/cicd_testing_pipeline_full_proj/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -224,7 +224,7 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: s3963207_asm2_key
+      KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
@@ -242,22 +242,22 @@ Resources:
           sudo su -
 
           echo "source /root/init_repo.sh" >> /root/.bashrc
-          echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
+          echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
 
           echo '
           #!/bin/bash
 
-          # Check if COSC2767-RMIT-Store/ exists
-          if [ -d "COSC2767-RMIT-Store" ]; then
-              echo "Removing COSC2767-RMIT-Store/..."
-              rm -rf COSC2767-RMIT-Store/
-              echo "COSC2767-RMIT-Store/ removed."
+          # Check if cicd_testing_pipeline_full_proj/ exists
+          if [ -d "cicd_testing_pipeline_full_proj" ]; then
+              echo "Removing cicd_testing_pipeline_full_proj/..."
+              rm -rf cicd_testing_pipeline_full_proj/
+              echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
+          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
-          # Navigate to the COSC2767-RMIT-Store directory
-          cd ~/COSC2767-RMIT-Store/utilities
+          # Navigate to the cicd_testing_pipeline_full_proj directory
+          cd ~/cicd_testing_pipeline_full_proj/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -291,7 +291,7 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: s3963207_asm2_key
+      KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
@@ -312,25 +312,25 @@ Resources:
           kill $(lsof -t -i tcp:80)
           docker stop my-rmit-store
           docker container prune -f
-          docker run -d --name my-rmit-store -p 80:80 laansdole/s3963207-rmit-store
+          docker run -d --name my-rmit-store -p 80:80 3750945/rmitstore
           echo "Server is running at http://$(curl -s http://checkip.amazonaws.com/)"
           ' >> /root/.bashrc
-          echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
+          echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
 
           echo '
           #!/bin/bash
 
-          # Check if COSC2767-RMIT-Store/ exists
-          if [ -d "COSC2767-RMIT-Store" ]; then
-              echo "Removing COSC2767-RMIT-Store/..."
-              rm -rf COSC2767-RMIT-Store/
-              echo "COSC2767-RMIT-Store/ removed."
+          # Check if cicd_testing_pipeline_full_proj/ exists
+          if [ -d "cicd_testing_pipeline_full_proj" ]; then
+              echo "Removing cicd_testing_pipeline_full_proj/..."
+              rm -rf cicd_testing_pipeline_full_proj/
+              echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
+          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
-          # Navigate to the COSC2767-RMIT-Store directory
-          cd ~/COSC2767-RMIT-Store/utilities
+          # Navigate to the cicd_testing_pipeline_full_proj directory
+          cd ~/cicd_testing_pipeline_full_proj/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -370,7 +370,7 @@ Resources:
           )
 
           # Run my prepared Docker Image
-          docker run -d --name my-rmit-store -p 80:80 laansdole/s3963207-rmit-store
+          docker run -d --name my-rmit-store -p 80:80 3750945/rmitstore
 
           # Change hostname
           rm -f /etc/hostname
@@ -393,7 +393,7 @@ Resources:
 
           service sshd reload
 
-          cp /root/COSC2767-RMIT-Store/utilities/Dockerfile /home/ansibleadmin/
+          cp /root/cicd_testing_pipeline_full_proj/utilities/Dockerfile /home/ansibleadmin/
 
           reboot
 
@@ -403,7 +403,7 @@ Resources:
       ImageId: ami-0005e0cfe09cc9050
       InstanceType: t2.micro
       IamInstanceProfile: LabInstanceProfile
-      KeyName: s3963207_asm2_key
+      KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
@@ -435,21 +435,21 @@ Resources:
           echo '
           #!/bin/bash
 
-          # Check if COSC2767-RMIT-Store/ exists
-          if [ -d "COSC2767-RMIT-Store" ]; then
-              echo "Removing COSC2767-RMIT-Store/..."
-              rm -rf COSC2767-RMIT-Store/
-              echo "COSC2767-RMIT-Store/ removed."
+          # Check if cicd_testing_pipeline_full_proj/ exists
+          if [ -d "cicd_testing_pipeline_full_proj" ]; then
+              echo "Removing cicd_testing_pipeline_full_proj/..."
+              rm -rf cicd_testing_pipeline_full_proj/
+              echo "cicd_testing_pipeline_full_proj/ removed."
           fi 
 
-          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
+          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
           # Install tree command to show the directory tree of the pulled repository
           sudo yum install tree -y
-          tree ~/COSC2767-RMIT-Store/
+          tree ~/cicd_testing_pipeline_full_proj/
 
-          # Navigate to the COSC2767-RMIT-Store directory
-          cd ~/COSC2767-RMIT-Store/utilities
+          # Navigate to the cicd_testing_pipeline_full_proj directory
+          cd ~/cicd_testing_pipeline_full_proj/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
