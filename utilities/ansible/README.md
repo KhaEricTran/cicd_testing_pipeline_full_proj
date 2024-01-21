@@ -20,3 +20,5 @@ ssh-copy-id [<docker_server_private_ip_address>]
 ```bash
 ansible-playbook ansiblePlaybook.yml
 ```
+
+

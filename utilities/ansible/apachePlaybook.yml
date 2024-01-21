@@ -21,18 +21,12 @@
       ignore_errors: yes
 
     - name: Remove all images
-      command: "sudo docker rmi --force advanced-task:latest"
+      command: "sudo docker rmi --force laansdole/s3963207-rmit-store:latest"
       ignore_errors: yes
 
     - name: Log out if connected to Docker
       command: sudo docker logout
       ignore_errors: yes
 
-    - name: Log in to the Dockerhub Account
-      command: sudo docker login -u "3750945" -p "040421Ed!." docker.io
-
-    - name: Build images based on the Dockerfile on Docker server
-      command: sudo docker build -t advanced-task:latest .
-
     - name: Run the apache container based on pushed docker hub image
-      command: sudo docker run -d --name my-rmit-store --rm -p 8080:80 advanced-task:latest
+      command: sudo docker run -d --name my-rmit-store --rm -p 80:80 laansdole/s3963207-rmit-store:latest

@@ -7,7 +7,7 @@ kill $(lsof -t -i tcp:80)
 ```
 ***Run my prepared Docker Image***
 ```
-docker run -d --name my-rmit-store -p 80:80 3750945/rmitstore
+docker run -d --name my-rmit-store -p 80:80 laansdole/s3963207-rmit-store
 ```
 ## Local Build
 ### To populate data

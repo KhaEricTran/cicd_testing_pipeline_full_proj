@@ -1,3 +1,17 @@
+#!/bin/bash
+
+# RMIT University Vietnam
+#  Course: COSC2767 Systems Deployment and Operations
+#  Semester: 2023C
+#  Assessment: Assignment 2
+#  Author: Do Le Long An
+#  ID: s3963207
+#  Created date: December 10, 2023
+#  Last modified: December 31, 2023
+#  Acknowledgement: RMIT Canvas, ChatGPT, AWS Documentation, StackOverflow,
+#  AWSAcademy Learner Lab, GitHub Documentation, Docker Documentation
+#  ngrok Documentation, Jenkins Documentation
+
 # First check if Maven is already installed
 if command -v mvn >/dev/null 2>&1; then
     echo "Maven is already installed."
