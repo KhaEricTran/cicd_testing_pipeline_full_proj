@@ -1,12 +1,3 @@
-# RMIT University Vietnam
-#  Course: COSC2767 Systems Deployment and Operations
-#  Semester: 2023C
-#  Assessment: Assignment 3
-#  Author: Kha Nguyen Anh Tran
-#  ID: 3750945
-#  Created date: January 10, 2024
-#  Last modified: January 22, 2024
-
 # First check if Maven is already installed
 if command -v mvn >/dev/null 2>&1; then
     echo "Maven is already installed."

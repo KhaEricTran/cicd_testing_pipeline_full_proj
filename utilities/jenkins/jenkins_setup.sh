@@ -1,3 +1,5 @@
+#!/bin/bash
+
 public_ipv4=$(curl -s http://checkip.amazonaws.com/)
 # Import the repository of Jenkins
 sudo wget -O /etc/yum.repos.d/jenkins.repo \

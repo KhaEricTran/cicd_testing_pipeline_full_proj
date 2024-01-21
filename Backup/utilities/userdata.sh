@@ -4,22 +4,22 @@ public_ipv4=$(curl -s http://checkip.amazonaws.com/)
 sudo su -
 
 echo "source /root/init_repo.sh" >> /root/.bashrc
-echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
+echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
 
 echo '
 #!/bin/bash
 
-# Check if COSC2767-RMIT-Store/ exists
-if [ -d "COSC2767-RMIT-Store" ]; then
-    echo "Removing COSC2767-RMIT-Store/..."
-    rm -rf COSC2767-RMIT-Store/
-    echo "COSC2767-RMIT-Store/ removed."
+# Check if cicd_testing_pipeline_full_proj/ exists
+if [ -d "cicd_testing_pipeline_full_proj" ]; then
+    echo "Removing cicd_testing_pipeline_full_proj/..."
+    rm -rf cicd_testing_pipeline_full_proj/
+    echo "cicd_testing_pipeline_full_proj/ removed."
 fi
 
-git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
+git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
-# Navigate to the COSC2767-RMIT-Store directory
-cd ~/COSC2767-RMIT-Store/utilities
+# Navigate to the cicd_testing_pipeline_full_proj directory
+cd ~/cicd_testing_pipeline_full_proj/utilities
 
 # Find all Bash script files and make them executable
 find . -type f -name "*.sh" -exec chmod +x {} \;

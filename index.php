@@ -85,8 +85,7 @@
 
         <section class="rmit-store-section row">
             <div class="check_tittle wow fadeInUp" data-wow-delay="0.4s" id="item-list">
-                <h2>Our Store at 11:58 with Pytest</h2>
-                
+                <h2>Our Store at 2:31pm</h2>
             </div>
             <div class="row rmit-product-section">
               <?php
@@ -142,7 +141,7 @@
         <footer class="footer_area row">
             <div class="container custom-container">
                 <div class="copy_right_area">
-                    <h4 class="copy_right">© Copyright 2022 RMIT Vietnam | Made with ❤️ 4 TECH TEAM</h4>
+                    <h4 class="copy_right">© Copyright 2022 RMIT Vietnam | Made with ❤️</h4>
                 </div>
             </div>
         </footer>

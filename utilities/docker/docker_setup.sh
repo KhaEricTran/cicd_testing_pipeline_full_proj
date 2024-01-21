@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Install Docker
 if rpm -q docker; then
   echo "docker already installed, skipping..."

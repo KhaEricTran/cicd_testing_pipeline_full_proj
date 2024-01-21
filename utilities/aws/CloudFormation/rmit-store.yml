@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Launching a EC2 Instance hosting a RMITStore on CloudFormation AWS"
+Description: "This is a template for launching a EC2 Instance that host a RMITStore Server"
 Resources:
   JenkinsEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: ASM3_GROUP_KEY
+      KeyName: s3963207_asm2_key
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
@@ -25,17 +25,17 @@ Resources:
           echo '
           #!/bin/bash
 
-          # Check if cicd_testing_pipeline_full_proj/ exists
-          if [ -d "cicd_testing_pipeline_full_proj" ]; then
-              echo "cicd_testing_pipeline_full_proj/..."
-              rm -rf cicd_testing_pipeline_full_proj/
-              echo "cicd_testing_pipeline_full_proj/ removed."
+          # Check if COSC2767-RMIT-Store/ exists
+          if [ -d "COSC2767-RMIT-Store" ]; then
+              echo "Removing COSC2767-RMIT-Store/..."
+              rm -rf COSC2767-RMIT-Store/
+              echo "COSC2767-RMIT-Store/ removed."
           fi
 
-          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
 
-          # Navigate to the cicd_testing_pipeline_full_proj directory
-          cd ~/cicd_testing_pipeline_full_proj/utilities
+          # Navigate to the COSC2767-RMIT-Store directory
+          cd ~/COSC2767-RMIT-Store/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -53,7 +53,7 @@ Resources:
           fi
 
           # Setup Maven
-          source /root/cicd_testing_pipeline_full_proj/utilities/maven/maven_install.sh
+          source /root/COSC2767-RMIT-Store/utilities/maven/maven_install.sh
 
           # Source .bashrc to apply changes
           source ~/.bashrc
@@ -123,7 +123,7 @@ Resources:
           # Install Google Chrome Binary for Linux
           sudo yum install -y liberation-fonts
           sudo yum install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-          echo "google-chrome --version" >> /root/.bashrc
+          echo "google-chrome --version" >>/root/.bashrc
 
           # Install ChromeDriver Binary for Linux
           sudo yum install -y unzip
@@ -147,7 +147,7 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: ASM3_GROUP_KEY
+      KeyName: s3963207_asm2_key
       SecurityGroupIds:
         - AnsibleSecurityGroup
       Tags:
@@ -164,24 +164,22 @@ Resources:
           sudo su -
 
           echo "source /root/init_repo.sh" >> /root/.bashrc
-          echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
+          echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
 
           echo '
           #!/bin/bash
 
-          # Check if cicd_testing_pipeline_full_proj/ exists
-          if [ -d "cicd_testing_pipeline_full_proj" ]; then
-              echo "Removing cicd_testing_pipeline_full_proj/..."
-              rm -rf cicd_testing_pipeline_full_proj/
-              echo "cicd_testing_pipeline_full_proj/ removed."
+          # Check if COSC2767-RMIT-Store/ exists
+          if [ -d "COSC2767-RMIT-Store" ]; then
+              echo "Removing COSC2767-RMIT-Store/..."
+              rm -rf COSC2767-RMIT-Store/
+              echo "COSC2767-RMIT-Store/ removed."
           fi
 
-          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
 
-          sudo cp /root/cicd_testing_pipeline_full_proj/utilities/ansible/ansiblePlaybook.yml /root/
-
-          # Navigate to the cicd_testing_pipeline_full_proj directory
-          cd ~/cicd_testing_pipeline_full_proj/utilities
+          # Navigate to the COSC2767-RMIT-Store directory
+          cd ~/COSC2767-RMIT-Store/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -223,14 +221,13 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: ASM3_GROUP_KEY
+      KeyName: s3963207_asm2_key
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
         - Key: Name
           Value: TestRMIT-Store_DB
       Monitoring: true
-      UserData:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -241,22 +238,22 @@ Resources:
           sudo su -
 
           echo "source /root/init_repo.sh" >> /root/.bashrc
-          echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
+          echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
 
           echo '
           #!/bin/bash
 
-          # Check if cicd_testing_pipeline_full_proj/ exists
-          if [ -d "cicd_testing_pipeline_full_proj" ]; then
-              echo "Removing cicd_testing_pipeline_full_proj/..."
-              rm -rf cicd_testing_pipeline_full_proj/
-              echo "cicd_testing_pipeline_full_proj/ removed."
+          # Check if COSC2767-RMIT-Store/ exists
+          if [ -d "COSC2767-RMIT-Store" ]; then
+              echo "Removing COSC2767-RMIT-Store/..."
+              rm -rf COSC2767-RMIT-Store/
+              echo "COSC2767-RMIT-Store/ removed."
           fi
 
-          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
 
-          # Navigate to the cicd_testing_pipeline_full_proj directory
-          cd ~/cicd_testing_pipeline_full_proj/utilities
+          # Navigate to the COSC2767-RMIT-Store directory
+          cd ~/COSC2767-RMIT-Store/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -290,7 +287,7 @@ Resources:
     Properties:
       ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
-      KeyName: ASM3_GROUP_KEY
+      KeyName: s3963207_asm2_key
       SecurityGroupIds:
         - JenkinsSecurityGroup
       Tags:
@@ -309,25 +306,26 @@ Resources:
           echo '
           source /root/init_repo.sh
           kill $(lsof -t -i tcp:80)
-          docker run -d --name my-rmit-store -p 80:80 3750945/rmitstore
+          docker start my-rmit-store
+          cp /root/COSC2767-RMIT-Store/utilities/Dockerfile /home/ansibleadmin/
           echo "Server is running at http://$(curl -s http://checkip.amazonaws.com/)"
           ' >> /root/.bashrc
-          echo "cd cicd_testing_pipeline_full_proj/" >> /root/.bashrc
+          echo "cd COSC2767-RMIT-Store/" >> /root/.bashrc
 
           echo '
           #!/bin/bash
 
-          # Check if cicd_testing_pipeline_full_proj/ exists
-          if [ -d "cicd_testing_pipeline_full_proj" ]; then
-              echo "Removing cicd_testing_pipeline_full_proj/..."
-              rm -rf cicd_testing_pipeline_full_proj/
-              echo "cicd_testing_pipeline_full_proj/ removed."
+          # Check if COSC2767-RMIT-Store/ exists
+          if [ -d "COSC2767-RMIT-Store" ]; then
+              echo "Removing COSC2767-RMIT-Store/..."
+              rm -rf COSC2767-RMIT-Store/
+              echo "COSC2767-RMIT-Store/ removed."
           fi
 
-          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git
 
-          # Navigate to the cicd_testing_pipeline_full_proj directory
-          cd ~/cicd_testing_pipeline_full_proj/utilities
+          # Navigate to the COSC2767-RMIT-Store directory
+          cd ~/COSC2767-RMIT-Store/utilities
 
           # Find all Bash script files and make them executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
@@ -367,13 +365,11 @@ Resources:
           )
 
           # Run my prepared Docker Image
-          docker run -d --name my-rmit-store -p 80:80 3750945/rmitstore
+          docker run -d --name my-rmit-store -p 80:80 laansdole/s3963207-rmit-store
 
           # Change hostname
           rm -f /etc/hostname
           echo "dev_server" >> /etc/hostname
-
-          ########## ansibleadmin Setup ##########
 
           # Add ansibleadmin user
           sudo useradd ansibleadmin
@@ -381,105 +377,13 @@ Resources:
           # Delete the current password (if any)
           sudo passwd -d ansibleadmin
 
-          # Set a new password for ansibleadmin
-          echo "ansibleadmin:ansibleadmin" | sudo chpasswd
-
           sudo usermod -aG docker ansibleadmin
           echo "ansibleadmin ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
           sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
           service sshd reload
 
-          cp /root/cicd_testing_pipeline_full_proj/utilities/Dockerfile /home/ansibleadmin/
-
           reboot
-
-  KubectlEC2Instance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-0005e0cfe09cc9050
-      InstanceType: t2.micro
-      IamInstanceProfile: LabInstanceProfile
-      KeyName: ASM3_GROUP_KEY
-      SecurityGroupIds:
-        - JenkinsSecurityGroup
-      Tags:
-        - Key: Name
-          Value: Rmit_Store_Kubectl
-      Monitoring: true
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-
-          echo "sudo su -" >> /home/ec2-user/.bashrc
-          public_ipv4=$(curl -s http://checkip.amazonaws.com/)
-
-          sudo su -
-
-          # Change hostname
-          rm -f /etc/hostname
-          echo "dev_server" >> /etc/hostname
-
-          # Setup Kubectl
-          curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.3/2023-11-14/bin/linux/amd64/kubectl
-          chmod +x ./kubectl
-          mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-          echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-          curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-          sudo mv /tmp/eksctl /usr/local/bin
-          aws eks update-kubeconfig --name eks-tutorial-cluster --region us-east-1
-
-          echo '
-          #!/bin/bash
-
-          # Check if cicd_testing_pipeline_full_proj/ exists
-          if [ -d "cicd_testing_pipeline_full_proj" ]; then
-              echo "Removing cicd_testing_pipeline_full_proj/..."
-              rm -rf cicd_testing_pipeline_full_proj/
-              echo "cicd_testing_pipeline_full_proj/ removed."
-          fi 
-
-          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
-
-          # Install tree command to show the directory tree of the pulled repository
-          sudo yum install tree -y
-          tree ~/cicd_testing_pipeline_full_proj/
-
-          # Navigate to the cicd_testing_pipeline_full_proj directory
-          cd ~/cicd_testing_pipeline_full_proj/utilities
-
-          # Find all Bash script files and make them executable
-          find . -type f -name "*.sh" -exec chmod +x {} \;
-
-          echo "Bash script files in assignment-3 directory made executable."
-
-          # Source .bashrc to apply changes
-          source ~/.bashrc
-          ' >> /root/init_repo.sh
-
-          chmod +x /root/init_repo.sh
-
-          #Connect Kubectl to workers
-          echo '
-          #!/bin/bash
-          read -p "Cluster name: " clusterName
-          read -p "Region: " region
-          aws eks update-kubeconfig --name $clusterName --region $region
-          ' >> /root/connect-workers.sh
-          chmod +x connect-workers.sh
-
-          # Install Git
-          sudo yum install git -y        
-
-  JenkinsEIP:
-    Type: AWS::EC2::EIP
-    Properties: {}
-
-  JenkinsEIPAssociation:
-    Type: AWS::EC2::EIPAssociation
-    Properties:
-      AllocationId: !GetAtt JenkinsEIP.AllocationId
-      InstanceId: !Ref JenkinsEC2Instance        
 
   RMITStoreEIP:
     Type: AWS::EC2::EIP
@@ -494,7 +398,9 @@ Resources:
   RMITStoreRecoveryAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmDescription: "Trigger a recovery when instance status check fails for 15 consecutive minutes."
+      AlarmDescription:
+        Trigger a recovery when instance status check fails for 15
+        consecutive minutes.
       Namespace: AWS/EC2
       MetricName: StatusCheckFailed_System
       Statistic: Minimum
