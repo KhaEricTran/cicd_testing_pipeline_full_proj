@@ -4,7 +4,7 @@ Resources:
   JenkinsEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0e9107ed11be76fde
+      ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
       KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
@@ -32,7 +32,7 @@ Resources:
               echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
           # Navigate to the cicd_testing_pipeline_full_proj directory
           cd ~/cicd_testing_pipeline_full_proj/utilities
@@ -145,7 +145,7 @@ Resources:
   AnsibleEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0e9107ed11be76fde
+      ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
       KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
@@ -176,7 +176,7 @@ Resources:
               echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
           # Navigate to the cicd_testing_pipeline_full_proj directory
           cd ~/cicd_testing_pipeline_full_proj/utilities
@@ -219,7 +219,7 @@ Resources:
   RMITStoreDatabaseEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0e9107ed11be76fde
+      ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
       KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
@@ -250,7 +250,7 @@ Resources:
               echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
           # Navigate to the cicd_testing_pipeline_full_proj directory
           cd ~/cicd_testing_pipeline_full_proj/utilities
@@ -285,7 +285,7 @@ Resources:
   RMITStoreEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0e9107ed11be76fde
+      ImageId: ami-0ed9277fb7eb570c9
       InstanceType: t2.micro
       KeyName: ASM3_GROUP_KEY
       SecurityGroupIds:
@@ -322,7 +322,7 @@ Resources:
               echo "cicd_testing_pipeline_full_proj/ removed."
           fi
 
-          git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+          git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
           # Navigate to the cicd_testing_pipeline_full_proj directory
           cd ~/cicd_testing_pipeline_full_proj/utilities

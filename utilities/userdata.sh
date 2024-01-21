@@ -18,7 +18,7 @@ if [ -d "cicd_testing_pipeline_full_proj" ]; then
     echo "cicd_testing_pipeline_full_proj/ removed."
 fi
 
-git clone -b dev https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+git clone https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
 
 # Navigate to the cicd_testing_pipeline_full_proj directory
 cd ~/cicd_testing_pipeline_full_proj/utilities
