@@ -11,7 +11,7 @@ echo "
 ```
 ***On ansibleadmin user `sudo su - ansibleadmin`:***
 ```bash
-ssh-keygen -t ed25519 -C "dolelongan@gmail.com" -f ~/.ssh/id_ed25519 -N ""
+ssh-keygen -t ed25519 -C "s3750945@student.rmit.edu.au" -f ~/.ssh/id_ed25519 -N ""
 ```
 ```bash
 ssh-copy-id [<docker_server_private_ip_address>]
