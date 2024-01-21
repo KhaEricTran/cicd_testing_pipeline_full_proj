@@ -9,7 +9,7 @@ pipeline {
 
         stage('Cloning simple website code from Github') {
             steps {
-                checkout scmGit(branches: [[name: '*/dang-branch']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/RMIT-DevOps-Hackathon/COSC2767-RMIT-Store.git']])
+                checkout scmGit(branches: [[name: '*/advanced-branch']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git']])
             }
         }
 
