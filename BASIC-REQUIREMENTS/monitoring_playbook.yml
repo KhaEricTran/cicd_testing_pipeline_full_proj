@@ -1,28 +1,52 @@
 ---
-- name: Install and Configure Monitoring Tools (Prometheus and Grafana)
+- name: Install and Configure Monitoring Tools (Prometheus, Grafana, and Alertmanager)
   hosts: aws_ec2
   become: yes
   tasks:
+    # Prometheus Configuration
     - name: Create Prometheus configuration directory
       file:
         path: /etc/prometheus
         state: directory
 
-    - name: Create Prometheus configuration for external store-service monitoring
+    - name: Create Prometheus configuration for Kubernetes monitoring
       copy:
         dest: /etc/prometheus/prometheus.yml
         content: |
           global:
             scrape_interval: 15s
           scrape_configs:
-            - job_name: 'prometheus'
-              static_configs:
-                - targets: ['localhost:9090']
-            - job_name: 'external-store-service'
-              metrics_path: '/'
-              static_configs:
-                - targets: ['a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com:80']
+            - job_name: 'kubernetes-nodes'
+              kubernetes_sd_configs:
+                - role: node
+            - job_name: 'kubernetes-pods'
+              kubernetes_sd_configs:
+                - role: pod
 
+    # Alertmanager Configuration
+    - name: Create Alertmanager configuration directory
+      file:
+        path: /etc/alertmanager
+        state: directory
+
+    - name: Create Alertmanager configuration
+      copy:
+        dest: /etc/alertmanager/config.yml
+        content: |
+          global:
+            resolve_timeout: 5m
+          route:
+            group_by: ['alertname']
+            group_wait: 10s
+            group_interval: 10s
+            repeat_interval: 1h
+            receiver: 'web.hook'
+          receivers:
+          - name: 'web.hook'
+            webhook_configs:
+            - url: 'http://example.com'  # Replace with your webhook URL
+
+    # Deploy Prometheus
     - name: Install and start Prometheus
       docker_container:
         name: prometheus
@@ -31,5 +55,27 @@
           - "9090:9090"
         volumes:
           - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        state: started
+        restart_policy: unless-stopped
+
+    # Deploy Alertmanager
+    - name: Install and start Alertmanager
+      docker_container:
+        name: alertmanager
+        image: prom/alertmanager:v0.21.0
+        ports:
+          - "9093:9093"
+        volumes:
+          - /etc/alertmanager/config.yml:/etc/alertmanager/config.yml
+        state: started
+        restart_policy: unless-stopped
+
+    # Deploy Grafana
+    - name: Install and start Grafana
+      docker_container:
+        name: grafana
+        image: grafana/grafana:7.5.0
+        ports:
+          - "3000:3000"
         state: started
         restart_policy: unless-stopped
