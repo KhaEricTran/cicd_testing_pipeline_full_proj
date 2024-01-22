@@ -29,14 +29,14 @@
     # Copy Kubernetes CA certificate to Prometheus server
     - name: Copy Kubernetes CA certificate to Prometheus server
       copy:
-        src: /local/path/to/ca.crt  # Update this path
+        src: /root/cicd_testing_pipeline_full_proj/BASIC-REQUIREMENTS/ca.crt  # Update this path
         dest: /etc/prometheus/ca.crt
         mode: '0644'
 
     # Copy Kubernetes bearer token to Prometheus server
     - name: Copy Kubernetes bearer token to Prometheus server
       copy:
-        src: /local/path/to/token.txt  # Update this path
+        src: /root/cicd_testing_pipeline_full_proj/BASIC-REQUIREMENTS/token.txt  # Update this path
         dest: /etc/prometheus/token
         mode: '0644'
 
