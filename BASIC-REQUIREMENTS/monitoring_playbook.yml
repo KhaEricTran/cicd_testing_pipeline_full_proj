@@ -18,7 +18,7 @@
             - job_name: 'prometheus'
               static_configs:
                 - targets: ['localhost:9090']
-
+            
     - name: Install and start Prometheus
       docker_container:
         name: prometheus
@@ -36,7 +36,5 @@
         image: grafana/grafana:7.5.0
         ports:
           - "3000:3000"
-        environment:
-          GF_SECURITY_ADMIN_PASSWORD: "rmit_password"
         state: started
         restart_policy: unless-stopped
