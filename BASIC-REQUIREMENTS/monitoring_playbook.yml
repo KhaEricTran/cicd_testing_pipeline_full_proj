@@ -1,0 +1,41 @@
+---
+- name: Set up Monitoring Tools (Prometheus and Grafana)
+  hosts: aws_ec2
+  become: yes
+
+  tasks:
+    # Install Prometheus
+    - name: Install Prometheus
+      docker_container:
+        name: prometheus
+        image: prom/prometheus:v2.26.0
+        ports:
+          - "9090:9090"
+        volumes:
+          - /path/to/prometheus/config:/etc/prometheus
+        state: started
+        restart_policy: unless-stopped
+
+    # Prometheus Configuration Setup (This is an example. Adjust as needed)
+    - name: Copy Prometheus configuration
+      copy:
+        src: /path/to/your/prometheus.yml
+        dest: /path/to/prometheus/config/prometheus.yml
+
+    # Install Grafana
+    - name: Install Grafana
+      docker_container:
+        name: grafana
+        image: grafana/grafana:7.5.0
+        ports:
+          - "3000:3000"
+        environment:
+          GF_SECURITY_ADMIN_PASSWORD: "your_secure_password"  # Change this
+        state: started
+        restart_policy: unless-stopped
+
+    # Grafana Configuration Setup (You'll configure dashboards through the Grafana UI)
+    - name: Ensure Grafana data directory exists
+      file:
+        path: /var/lib/grafana
+        state: directory
