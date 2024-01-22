@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: rmit-store
-          image: laansdole/s3963207-rmit-store:latest
+          image: 3750945/rmitstore:latest
           imagePullPolicy: "Always"
           ports:
             - containerPort: 80

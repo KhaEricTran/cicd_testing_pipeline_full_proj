@@ -142,7 +142,7 @@
         <footer class="footer_area row">
             <div class="container custom-container">
                 <div class="copy_right_area">
-                    <h4 class="copy_right">© Copyright 2024 RMIT Vietnam | Made with ❤️ 4 TECH TEAM</h4>
+                    <h4 class="copy_right">© Copyright 2024 RMIT Vietnam | Created on 22 January 2024 - delpoyed by 3750945 </h4>
                 </div>
             </div>
         </footer>
