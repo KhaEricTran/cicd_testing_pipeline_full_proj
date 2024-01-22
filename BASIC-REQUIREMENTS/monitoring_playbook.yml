@@ -8,7 +8,7 @@
         path: /etc/prometheus
         state: directory
 
-    - name: Create Prometheus configuration for targeted Kubernetes monitoring
+    - name: Create Prometheus configuration for external store-service monitoring
       copy:
         dest: /etc/prometheus/prometheus.yml
         content: |
@@ -18,25 +18,10 @@
             - job_name: 'prometheus'
               static_configs:
                 - targets: ['localhost:9090']
-            - job_name: 'kubernetes-store-app'
-              kubernetes_sd_configs:
-                - role: pod
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_label_app]
-                  action: keep
-                  regex: store-app-deploy  # Adjust if your label is different
-                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-                  action: keep
-                  regex: "true"
-                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-                  action: replace
-                  target_label: __metrics_path__
-                  regex: (.+)
-                  replacement: "/metrics"  # Default metrics path
-                - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-                  action: replace
-                  regex: ([^:]+)(?::\d+)?;(\d+)
-                  replacement: $1:8080  # Adjust the port if different
+            - job_name: 'external-store-service'
+              metrics_path: '/'
+              static_configs:
+                - targets: ['a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com:80']
 
     - name: Install and start Prometheus
       docker_container:
