@@ -1,7 +1,0 @@
-version: '3'
-services:
-  web:
-    image: 3750945/rmitstore
-    ports:
-      - "80:80"
-      - "443:443"

@@ -1,0 +1,60 @@
+<project>
+    <actions />
+    <description />
+    <keepDependencies>false</keepDependencies>
+    <properties />
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+            <hudson.plugins.git.UserRemoteConfig>
+                <url>https://github.com/RenuzitV/COSC2767_RMIT_Store_DB</url>
+            </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+            <hudson.plugins.git.BranchSpec>
+                <name>*/main</name>
+            </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="empty-list" />
+        <extensions />
+    </scm>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers>
+        <hudson.triggers.SCMTrigger>
+            <spec>* * * * *</spec>
+            <ignorePostCommitHooks>false</ignorePostCommitHooks>
+        </hudson.triggers.SCMTrigger>
+    </triggers>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <hudson.tasks.Shell>
+            <command>
+<![CDATA[
+# Updated to use Docker Hub
+DB_REPO_URI=3750945/mariadb
+
+# Docker Hub login (consider a more secure approach for credentials)
+echo "040421Ed!" | docker login --username 3750945 --password-stdin
+
+# Build and push to Docker Hub
+docker build -t $DB_REPO_URI:latest .
+docker push $DB_REPO_URI:latest
+
+# Apply Kubernetes configurations
+kubectl apply -f mariadb-deploy.yml
+kubectl apply -f mariadb-service.yml
+
+# Restart deployment
+kubectl rollout restart deployment/mariadb-deploy
+]]>
+            </command>
+            <configuredLocalRules />
+        </hudson.tasks.Shell>
+    </builders>
+    <publishers />
+    <buildWrappers />
+</project>
