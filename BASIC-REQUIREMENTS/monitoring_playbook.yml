@@ -8,7 +8,7 @@
         path: /etc/prometheus
         state: directory
 
-    - name: Create Prometheus configuration for Kubernetes monitoring
+    - name: Create Prometheus configuration for targeted Kubernetes monitoring
       copy:
         dest: /etc/prometheus/prometheus.yml
         content: |
@@ -18,22 +18,25 @@
             - job_name: 'prometheus'
               static_configs:
                 - targets: ['localhost:9090']
-            - job_name: 'kubernetes-pods'
+            - job_name: 'kubernetes-store-app'
               kubernetes_sd_configs:
                 - role: pod
               relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app]
+                  action: keep
+                  regex: store-app-deploy  # Adjust if your label is different
                 - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
                   action: keep
-                  regex: true
+                  regex: "true"
                 - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
                   action: replace
                   target_label: __metrics_path__
                   regex: (.+)
+                  replacement: "/metrics"  # Default metrics path
                 - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
                   action: replace
                   regex: ([^:]+)(?::\d+)?;(\d+)
-                  replacement: $1:$2
-                  target_label: __address__
+                  replacement: $1:8080  # Adjust the port if different
 
     - name: Install and start Prometheus
       docker_container:
@@ -43,14 +46,5 @@
           - "9090:9090"
         volumes:
           - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-        state: started
-        restart_policy: unless-stopped
-
-    - name: Install and start Grafana
-      docker_container:
-        name: grafana
-        image: grafana/grafana:7.5.0
-        ports:
-          - "3000:3000"
         state: started
         restart_policy: unless-stopped
