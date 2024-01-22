@@ -69,7 +69,7 @@
             - job_name: 'cloudwatch'
               scrape_interval: 1m
               static_configs:
-                - targets: ['172.17.0.5:9106']
+                - targets: ['172.17.0.4:9106']  # Use the service name for DNS resolution
 
     # Deploy Prometheus
     - name: Install and start Prometheus
