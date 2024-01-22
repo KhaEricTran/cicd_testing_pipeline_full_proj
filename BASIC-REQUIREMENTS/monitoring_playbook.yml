@@ -25,7 +25,22 @@
             - job_name: 'store-app'
               static_configs:
                 - targets: ['a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com:80']
-  
+    
+    # Copy Kubernetes CA certificate to Prometheus server
+    - name: Copy Kubernetes CA certificate to Prometheus server
+      copy:
+        src: /local/path/to/ca.crt  # Update this path
+        dest: /etc/prometheus/ca.crt
+        mode: '0644'
+
+    # Copy Kubernetes bearer token to Prometheus server
+    - name: Copy Kubernetes bearer token to Prometheus server
+      copy:
+        src: /local/path/to/token.txt  # Update this path
+        dest: /etc/prometheus/token
+        mode: '0644'
+
+    # Add Kubernetes API server access to Prometheus configuration
     - name: Add Kubernetes API server access to Prometheus configuration
       blockinfile:
         path: /etc/prometheus/prometheus.yml
@@ -34,11 +49,11 @@
             - job_name: 'kubernetes'
               kubernetes_sd_configs:
                 - role: pod
-                  api_server: 'https://<K8S_API_ENDPOINT>'  # Replace with your Kubernetes API server endpoint
+                  api_server: 'https://031BACF7588692FDD2B5CA9A2D5A0B48.gr7.us-east-1.eks.amazonaws.com'  # Your Kubernetes API server endpoint
                   tls_config:
-                    ca_file: '/path/to/ca.crt'            # Path to CA certificate for Kubernetes API
+                    ca_file: '/etc/prometheus/ca.crt'
                     insecure_skip_verify: false
-                  bearer_token_file: '/path/to/token'    # Path to the bearer token for authentication
+                  bearer_token_file: '/etc/prometheus/token'
         marker: "# {mark} ANSIBLE MANAGED BLOCK for Kubernetes API"
 
     # Deploy Prometheus
@@ -50,6 +65,8 @@
           - "9090:9090"
         volumes:
           - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+          - /etc/prometheus/ca.crt:/etc/prometheus/ca.crt
+          - /etc/prometheus/token:/etc/prometheus/token
         state: started
         restart_policy: unless-stopped
 
