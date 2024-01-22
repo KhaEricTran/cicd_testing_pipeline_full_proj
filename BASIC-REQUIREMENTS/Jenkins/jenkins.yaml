@@ -1,0 +1,56 @@
+#   RMIT University Vietnam
+#   Course: COSC2767 Systems Deployment and Operations
+#   Semester: 2023C
+#   Assessment: Assignment 1
+#   Author: Nguyen Vu Minh Duy
+#   ID: s3878076
+#   Created  date: 27/11/2023 (e.g. 31/07/2023)
+#   Last modified: 02/12/2023 (e.g. 05/08/2023)
+#   Acknowledgement: 
+# https://plugins.jenkins.io/adoptopenjdk/
+
+jenkins:
+  systemMessage: "Jenkins configured automatically by JCasC\n"
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: "admin"
+        password: "admin"
+        name: "RMIT"
+        properties:
+        - "myView"
+        - "timezone"
+        - "experimentalFlags"
+        - "apiToken"
+
+tool:
+  jdk:
+    installations:
+    # - name: "jdk11"
+    #   properties:
+    #   - installSource:
+    #       installers:
+    #       - adoptOpenJdkInstaller:
+    #           id: "jdk-11.0.21+9"
+    # - name: "jdk17"
+    #   properties:
+    #   - installSource:
+    #       installers:
+    #       - adoptOpenJdkInstaller:
+    #           id: "jdk-17.0.9+9"
+    - name: "jdk21"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-17+35"
+  maven:
+    installations:
+      - name: "Maven"
+        properties:
+          - installSource:
+              installers:
+                - maven:
+                    id: "3.9.6"
