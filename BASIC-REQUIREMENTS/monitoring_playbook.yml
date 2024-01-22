@@ -25,6 +25,21 @@
             - job_name: 'store-app'
               static_configs:
                 - targets: ['a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com:80']
+  
+    - name: Add Kubernetes API server access to Prometheus configuration
+      blockinfile:
+        path: /etc/prometheus/prometheus.yml
+        block: |
+          scrape_configs:
+            - job_name: 'kubernetes'
+              kubernetes_sd_configs:
+                - role: pod
+                  api_server: 'https://<K8S_API_ENDPOINT>'  # Replace with your Kubernetes API server endpoint
+                  tls_config:
+                    ca_file: '/path/to/ca.crt'            # Path to CA certificate for Kubernetes API
+                    insecure_skip_verify: false
+                  bearer_token_file: '/path/to/token'    # Path to the bearer token for authentication
+        marker: "# {mark} ANSIBLE MANAGED BLOCK for Kubernetes API"
 
     # Deploy Prometheus
     - name: Install and start Prometheus
