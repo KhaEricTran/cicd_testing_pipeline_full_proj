@@ -19,21 +19,18 @@
       command: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       args:
         creates: /usr/local/bin/aws
-    
+
     - name: Download kubectl
       get_url:
         url: "https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.3/2023-11-14/bin/linux/amd64/kubectl"
         dest: "/tmp/kubectl"
         mode: '0755'
 
+    - name: Make kubectl executable
+      command: chmod +x /tmp/kubectl
+
     - name: Move kubectl to /usr/local/bin
       command: mv /tmp/kubectl /usr/local/bin/kubectl
-
-    - name: Install kubectl
-      command: >
-        curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.3/2023-11-14/bin/linux/amd64/kubectl
-        && chmod +x ./kubectl
-        && mv ./kubectl /usr/local/bin/kubectl
 
     - name: Update kubeconfig for AWS EKS
       shell: aws eks update-kubeconfig --name {{ eks_cluster_name }} --region {{ aws_region }}
