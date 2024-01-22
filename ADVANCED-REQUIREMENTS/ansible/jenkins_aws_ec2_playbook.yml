@@ -1,0 +1,64 @@
+---
+- name: Configure AWS EC2 instance for Jenkins Deployment
+  hosts: aws_ec2
+  become: yes
+  vars:
+    aws_region: us-east-1
+    eks_cluster_name: devops-eks-cluster
+    jenkins_repo_uri: 3750945/jenkins
+    git_repo: https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+
+  tasks:
+    - name: Install necessary packages
+      yum:
+        name:
+          - docker
+        state: latest
+
+    - name: Install AWS CLI
+      command: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      args:
+        creates: /usr/local/bin/aws
+
+    - name: Install kubectl
+      command: >
+        curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.3/2023-11-14/bin/linux/amd64/kubectl
+        && chmod +x ./kubectl
+        && mv ./kubectl /usr/local/bin/kubectl
+
+    - name: Update kubeconfig for AWS EKS
+      shell: aws eks update-kubeconfig --name {{ eks_cluster_name }} --region {{ aws_region }}
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Clone GitHub repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: /var/lib/jenkins
+        clone: yes
+        update: yes
+
+    - name: Build Jenkins Docker image
+      shell: |
+        docker build --build-arg DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3) -t jenkins .
+        docker tag jenkins:latest {{ jenkins_repo_uri }}:latest
+        docker push {{ jenkins_repo_uri }}:latest
+        yes | docker image prune -a
+        yes | docker volume prune -a
+      args:
+        chdir: /var/lib/jenkins
+
+    - name: Run Jenkins container
+      docker_container:
+        name: jenkins
+        image: "{{ jenkins_repo_uri }}:latest"
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
