@@ -15,7 +15,7 @@ docker run -d --name my-rmit-store -p 80:80 3750945/rmitstore
 - Connect your EC2 Instance to AWS RDS Instance (rmit-store)
 - On EC2, assuming that you are on the root directory of the repository, run following commands:
 ```bash
-sudo mysql -hdatabasegroupasm3.cp62c24cmtsg.us-east-1.rds.amazonaws.com -udb_admin -prmit_password < ./sql-scripts/sql-script.sql
+sudo mysql -hdatabasegroupasm3.cp62c24cmtsg.us-east-1.rds.amazonaws.com -uadmin -prmit_password < ./sql-scripts/sql-script.sql
 ```
 You can change `databasegroupasm3.cp62c24cmtsg.us-east-1.rds.amazonaws.com` to any other hostname
 ### Docker Build
