@@ -1,0 +1,8 @@
+region: us-east-1
+metrics:
+ - aws_namespace: AWS/ELB
+   aws_metric_name: RequestCount
+   aws_dimensions: [LoadBalancerName]
+   aws_dimension_select:
+     LoadBalancerName: ["a894facca31e7414a98522d544a27fbb"]
+   aws_statistics: [Sum]

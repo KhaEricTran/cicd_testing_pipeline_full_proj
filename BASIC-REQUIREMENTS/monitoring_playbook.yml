@@ -3,67 +3,73 @@
   hosts: aws_ec2
   become: yes
   tasks:
+    # CloudWatch Exporter Configuration
+    - name: Create CloudWatch Exporter configuration directory
+      file:
+        path: /etc/prometheus/cloudwatch_exporter
+        state: directory
+
+    - name: Create CloudWatch Exporter configuration file
+      copy:
+        content: |
+          region: us-east-1
+          metrics:
+            - aws_namespace: AWS/ELB
+              aws_metric_name: RequestCount
+              aws_dimensions: [LoadBalancerName]
+              aws_dimension_select:
+                LoadBalancerName: ["a894facca31e7414a98522d544a27fbb"]
+              aws_statistics: [Sum]
+        dest: /etc/prometheus/cloudwatch_exporter/config.yml
+
+    - name: Deploy CloudWatch Exporter
+      docker_container:
+        name: cloudwatch_exporter
+        image: prom/cloudwatch-exporter:latest
+        ports:
+          - "9106:9106"
+        volumes:
+          - /etc/prometheus/cloudwatch_exporter/config.yml:/config/config.yml:ro
+        restart_policy: unless-stopped
+
     # Prometheus Configuration
     - name: Create Prometheus configuration directory
       file:
         path: /etc/prometheus
         state: directory
 
-    - name: Create Prometheus configuration for Kubernetes monitoring
+    - name: Create Prometheus configuration file
       copy:
         dest: /etc/prometheus/prometheus.yml
         content: |
           global:
             scrape_interval: 15s
+
           scrape_configs:
-            - job_name: 'kubernetes-nodes'
-              kubernetes_sd_configs:
-                - role: node
             - job_name: 'kubernetes-pods'
               kubernetes_sd_configs:
                 - role: pod
-            - job_name: 'store-app'
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app]
+                  action: keep
+                  regex: store-app-deploy  # Adjust this regex to match your application label
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                  action: keep
+                  regex: "true"
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                  action: replace
+                  target_label: __metrics_path__
+                  regex: (.+)
+                - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+                  action: replace
+                  regex: ([^:]+)(?::\d+)?;(\d+)
+                  replacement: $1:$2
+                  target_label: __address__
+
+            - job_name: 'cloudwatch'
+              scrape_interval: 1m
               static_configs:
-                - targets: ['a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com:80']
-            - job_name: 'kubernetes'
-              kubernetes_sd_configs:
-                - role: pod
-                  api_server: 'https://031BACF7588692FDD2B5CA9A2D5A0B48.gr7.us-east-1.eks.amazonaws.com'  # Your Kubernetes API server endpoint
-                  tls_config:
-                    ca_file: '/etc/prometheus/ca.crt'
-                    insecure_skip_verify: false
-                  bearer_token_file: '/etc/prometheus/token'
-
-    
-    # Copy Kubernetes CA certificate to Prometheus server
-    - name: Copy Kubernetes CA certificate to Prometheus server
-      copy:
-        src: /root/cicd_testing_pipeline_full_proj/BASIC-REQUIREMENTS/ca.crt  # Update this path
-        dest: /etc/prometheus/ca.crt
-        mode: '0644'
-
-    # Copy Kubernetes bearer token to Prometheus server
-    - name: Copy Kubernetes bearer token to Prometheus server
-      copy:
-        src: /root/cicd_testing_pipeline_full_proj/BASIC-REQUIREMENTS/token.txt  # Update this path
-        dest: /etc/prometheus/token
-        mode: '0644'
-
-    # Add Kubernetes API server access to Prometheus configuration
-    - name: Add Kubernetes API server access to Prometheus configuration
-      blockinfile:
-        path: /etc/prometheus/prometheus.yml
-        block: |
-          scrape_configs:
-            - job_name: 'kubernetes'
-              kubernetes_sd_configs:
-                - role: pod
-                  api_server: 'https://031BACF7588692FDD2B5CA9A2D5A0B48.gr7.us-east-1.eks.amazonaws.com'  # Your Kubernetes API server endpoint
-                  tls_config:
-                    ca_file: '/etc/prometheus/ca.crt'
-                    insecure_skip_verify: false
-                  bearer_token_file: '/etc/prometheus/token'
-        marker: "# {mark} ANSIBLE MANAGED BLOCK for Kubernetes API"
+                - targets: ['172.17.0.5:9106']
 
     # Deploy Prometheus
     - name: Install and start Prometheus
@@ -74,12 +80,10 @@
           - "9090:9090"
         volumes:
           - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-          - /etc/prometheus/ca.crt:/etc/prometheus/ca.crt
-          - /etc/prometheus/token:/etc/prometheus/token
         state: started
         restart_policy: unless-stopped
 
-    # Deploy Grafana
+    # Grafana Configuration
     - name: Install and start Grafana
       docker_container:
         name: grafana
