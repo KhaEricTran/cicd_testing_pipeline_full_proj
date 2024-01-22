@@ -25,6 +25,15 @@
             - job_name: 'store-app'
               static_configs:
                 - targets: ['a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com:80']
+            - job_name: 'kubernetes'
+              kubernetes_sd_configs:
+                - role: pod
+                  api_server: 'https://031BACF7588692FDD2B5CA9A2D5A0B48.gr7.us-east-1.eks.amazonaws.com'  # Your Kubernetes API server endpoint
+                  tls_config:
+                    ca_file: '/etc/prometheus/ca.crt'
+                    insecure_skip_verify: false
+                  bearer_token_file: '/etc/prometheus/token'
+
     
     # Copy Kubernetes CA certificate to Prometheus server
     - name: Copy Kubernetes CA certificate to Prometheus server
