@@ -8,7 +8,7 @@
         path: /etc/prometheus
         state: directory
 
-    - name: Create default Prometheus configuration
+    - name: Create Prometheus configuration for Kubernetes monitoring
       copy:
         dest: /etc/prometheus/prometheus.yml
         content: |
@@ -18,7 +18,23 @@
             - job_name: 'prometheus'
               static_configs:
                 - targets: ['localhost:9090']
-            
+            - job_name: 'kubernetes-pods'
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                  action: keep
+                  regex: true
+                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                  action: replace
+                  target_label: __metrics_path__
+                  regex: (.+)
+                - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+                  action: replace
+                  regex: ([^:]+)(?::\d+)?;(\d+)
+                  replacement: $1:$2
+                  target_label: __address__
+
     - name: Install and start Prometheus
       docker_container:
         name: prometheus
