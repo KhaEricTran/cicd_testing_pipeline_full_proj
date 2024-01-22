@@ -11,7 +11,7 @@ Resources:
         - JenkinsSecurityGroup
       Tags:
         - Key: Name
-          Value: RMIT_Store_Jenkins
+          Value: JenkinsEC2Instance
       Monitoring: true
       UserData:
         Fn::Base64: !Sub |
@@ -152,7 +152,7 @@ Resources:
         - AnsibleSecurityGroup
       Tags:
         - Key: Name
-          Value: TestRMIT-Store_Ansible
+          Value: AnsibleEC2Instance
       Monitoring: true
       UserData:
         Fn::Base64: !Sub |
@@ -229,7 +229,7 @@ Resources:
         - JenkinsSecurityGroup
       Tags:
         - Key: Name
-          Value: TestRMIT-Store_DB
+          Value: RMITStoreDatabaseEC2Instance
       Monitoring: true
       UserData:
       UserData:
@@ -296,7 +296,7 @@ Resources:
         - JenkinsSecurityGroup
       Tags:
         - Key: Name
-          Value: TestRMIT-Store
+          Value: RMITStoreEC2Instance
       Monitoring: true
       UserData:
         Fn::Base64: !Sub |
@@ -408,7 +408,7 @@ Resources:
         - JenkinsSecurityGroup
       Tags:
         - Key: Name
-          Value: Rmit_Store_Kubectl
+          Value: KubectlEC2Instance
       Monitoring: true
       UserData:
         Fn::Base64: !Sub |
