@@ -8,6 +8,11 @@
     elb_name: a894facca31e7414a98522d544a27fbb
 
   tasks:
+    - name: Copy CloudWatch Agent Config Template
+      template:
+        src: cloudwatch-agent-config.json.j2
+        dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json.j2
+
     - name: Download CloudWatch Agent
       get_url:
         url: https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
@@ -29,5 +34,8 @@
         src: cloudwatch-agent-config.json.j2
         dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 
-    - name: Start CloudWatch Agent
-      command: systemctl start amazon-cloudwatch-agent
+     - name: Start CloudWatch Agent
+      systemd:
+        name: amazon-cloudwatch-agent
+        state: started
+        enabled: yes
