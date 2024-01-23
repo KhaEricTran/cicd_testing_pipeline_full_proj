@@ -34,3 +34,8 @@
         name: amazon-cloudwatch-agent
         state: started
         enabled: yes
+
+    - name: Copy CloudWatch Agent Config
+      copy:
+        src: cloudwatch-agent-config.json
+        dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
