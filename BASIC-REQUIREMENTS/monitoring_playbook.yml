@@ -8,11 +8,21 @@
     elb_name: a894facca31e7414a98522d544a27fbb
 
   tasks:
-    - name: Install CloudWatch Agent
-      shell: |
-        wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
-        unzip AmazonCloudWatchAgent.zip -d /tmp
-        /tmp/install.sh
+    - name: Download CloudWatch Agent
+      get_url:
+        url: https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
+        dest: /tmp/AmazonCloudWatchAgent.zip
+
+    - name: Unzip CloudWatch Agent
+      unarchive:
+        src: /tmp/AmazonCloudWatchAgent.zip
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Run CloudWatch Agent install script
+      command: /tmp/install.sh
+      args:
+        chdir: /tmp/
 
     - name: Configure CloudWatch Agent for EKS and ELB Monitoring
       template:
