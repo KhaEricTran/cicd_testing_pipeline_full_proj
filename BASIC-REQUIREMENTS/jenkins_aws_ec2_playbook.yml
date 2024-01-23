@@ -1,5 +1,5 @@
 ---
-- name: Configure AWS EC2 instance for Jenkins Deployment
+- name: Configure AWS EC2 instance for Jenkins Deployment with Docker Swarm
   hosts: aws_ec2
   become: yes
   vars:
@@ -11,9 +11,10 @@
   tasks:
     - name: Install necessary packages
       yum:
-        name:
-          - docker
+        name: docker
         state: latest
+
+    # ... other tasks for installing AWS CLI, kubectl ...
 
     - name: Install AWS CLI
       command: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -40,6 +41,17 @@
         name: docker
         state: started
         enabled: yes
+
+    # ... tasks for cloning the repository and building Jenkins Docker image ...
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Initialize Docker Swarm
+      shell: docker swarm init
+      ignore_errors: yes
 
     - name: Clone GitHub repository
       git:
@@ -68,3 +80,10 @@
           - "8080:8080"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
+
+    - name: Deploy Jenkins as a Docker Swarm Service
+      shell: |
+        docker service create --name jenkins \
+          --publish 8080:8080 \
+          --mount type=bind,src=/var/lib/jenkins,dst=/var/jenkins_home \
+          "{{ jenkins_repo_uri }}:latest"
