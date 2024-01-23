@@ -1,126 +1,23 @@
 ---
-- name: Install and Configure Monitoring Tools (Prometheus, Grafana, and CloudWatch Exporter)
+- name: Setup CloudWatch Monitoring for EKS and ELB
   hosts: aws_ec2
   become: yes
+  vars:
+    aws_region: us-east-1
+    eks_cluster_name: devops-eks-cluster
+    elb_name: a894facca31e7414a98522d544a27fbb
+
   tasks:
-    # CloudWatch Exporter Configuration
-    - name: Create CloudWatch Exporter configuration directory
-      file:
-        path: /etc/prometheus/cloudwatch_exporter
-        state: directory
+    - name: Install CloudWatch Agent
+      shell: |
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
+        unzip AmazonCloudWatchAgent.zip -d /tmp
+        /tmp/install.sh
 
-    - name: Create CloudWatch Exporter configuration file
-      copy:
-        content: |
-          region: us-east-1
-          metrics:
-            - aws_namespace: AWS/ELB
-              aws_metric_name: RequestCount
-              aws_dimensions: [LoadBalancerName]
-              aws_dimension_select:
-                LoadBalancerName: ["a894facca31e7414a98522d544a27fbb-222917574.us-east-1.elb.amazonaws.com"]
-              aws_statistics: [Sum]
-            - aws_namespace: AWS/EKS
-              aws_metric_name: CPUUtilization
-              aws_dimensions: [ClusterName]
-              aws_dimension_select:
-                ClusterName: ["devops-eks-cluster"]
-              aws_statistics: [Average]
-            - aws_namespace: AWS/EC2
-              aws_metric_name: CPUUtilization
-              aws_dimensions: [InstanceId]
-              aws_statistics: [Average]
-        dest: /etc/prometheus/cloudwatch_exporter/config.yml
+    - name: Configure CloudWatch Agent for EKS and ELB Monitoring
+      template:
+        src: cloudwatch-agent-config.json.j2
+        dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 
-    - name: Deploy CloudWatch Exporter
-      docker_container:
-        name: cloudwatch_exporter
-        image: prom/cloudwatch-exporter:latest
-        ports:
-          - "9106:9106"
-        volumes:
-          - /etc/prometheus/cloudwatch_exporter/config.yml:/config/config.yml:ro
-        restart_policy: unless-stopped
-
-    # Prometheus Configuration for EKS and AWS Resources
-    - name: Create Prometheus configuration directory
-      file:
-        path: /etc/prometheus
-        state: directory
-
-    - name: Create Prometheus configuration file
-      copy:
-        dest: /etc/prometheus/prometheus.yml
-        content: |
-          global:
-            scrape_interval: 15s
-
-          scrape_configs:
-            # Scrape configuration for EKS Nodes
-            - job_name: 'eks-nodes'
-              kubernetes_sd_configs:
-                - role: node
-
-            # Scrape configuration for EKS Pods
-            - job_name: 'eks-pods'
-              kubernetes_sd_configs:
-                - role: pod
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-                  action: keep
-                  regex: "true"
-                - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-                  action: replace
-                  target_label: __metrics_path__
-                  regex: (.+)
-                - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-                  action: replace
-                  regex: ([^:]+)(?::\d+)?;(\d+)
-                  replacement: $1:$2
-                  target_label: __address__
-
-            # Scrape configuration for AWS ELB via CloudWatch
-            - job_name: 'aws-elb'
-              static_configs:
-                - targets: ['cloudwatch_exporter:9106']
-              metrics_path: /metrics
-              params:
-                task: [aws_elb]
-
-            # Scrape configuration for AWS EKS Cluster via CloudWatch
-            - job_name: 'aws-eks'
-              static_configs:
-                - targets: ['cloudwatch_exporter:9106']
-              metrics_path: /metrics
-              params:
-                task: [aws_eks]
-
-            # Scrape configuration for AWS EC2 Instances via CloudWatch
-            - job_name: 'aws-ec2'
-              static_configs:
-                - targets: ['cloudwatch_exporter:9106']
-              metrics_path: /metrics
-              params:
-                task: [aws_ec2]
-
-    # Deploy Prometheus
-    - name: Install and start Prometheus
-      docker_container:
-        name: prometheus
-        image: prom/prometheus:v2.26.0
-        ports:
-          - "9090:9090"
-        volumes:
-          - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-        restart_policy: unless-stopped
-        state: started
-
-    # Grafana Configuration
-    - name: Install and start Grafana
-      docker_container:
-        name: grafana
-        image: grafana/grafana:7.5.0
-        ports:
-          - "3000:3000"
-        restart_policy: unless-stopped
-        state: started
+    - name: Start CloudWatch Agent
+      command: systemctl start amazon-cloudwatch-agent
