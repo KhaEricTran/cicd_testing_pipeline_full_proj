@@ -1,0 +1,70 @@
+---
+- name: Setup Monitoring Tools in Kubernetes
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    # Check if the monitoring namespace exists
+    - name: Check if Monitoring namespace exists
+      shell: kubectl get namespace monitoring
+      register: monitoring_namespace_check
+      ignore_errors: yes
+
+    # Create monitoring namespace if it does not exist
+    - name: Create Monitoring namespace
+      shell: kubectl create namespace monitoring
+      when: monitoring_namespace_check.rc != 0
+
+    # Deploy YACE Exporter using LabInstanceProfile IAM role
+    - name: Deploy YACE Exporter for ELB
+      shell: kubectl apply -f https://raw.githubusercontent.com/jonahjon/promcat/master/yace/yace_elb.yaml --namespace monitoring
+
+    # Check if the Prometheus namespace exists
+    - name: Check if Prometheus namespace exists
+      shell: kubectl get namespace prometheus
+      register: prometheus_namespace_check
+      ignore_errors: yes
+
+    # Create Prometheus namespace if it does not exist
+    - name: Create Prometheus namespace
+      shell: kubectl create namespace prometheus
+      when: prometheus_namespace_check.rc != 0
+
+    - name: Add Prometheus Helm repository
+      shell: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+    - name: Update Helm repository
+      shell: helm repo update
+
+    # Deploy Prometheus using Helm
+    - name: Deploy Prometheus using Helm
+      shell: helm install prometheus prometheus-community/prometheus --namespace prometheus --set server.image.repository=3750945/prometheus --set server.image.tag=latest --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2",server.service.type=LoadBalancer
+
+    - name: Add Grafana Helm repository
+      shell: helm repo add grafana https://grafana.github.io/helm-charts
+
+    - name: Update Helm repository
+      shell: helm repo update
+
+    # Deploy Grafana with pre-loaded dashboards
+    - name: Deploy Grafana with pre-loaded dashboards
+      shell: |
+        helm upgrade -i grafana grafana/grafana \
+          --namespace monitoring \
+          --set image.repository=3750945/grafana \
+          --set image.tag=latest \
+          --set persistence.storageClassName="gp2" \
+          --set adminPassword='P@ssword123!' \
+          --set datasources."datasources\.yaml".apiVersion=1 \
+          --set datasources."datasources\.yaml".datasources[0].name=Prometheus \
+          --set datasources."datasources\.yaml".datasources[0].type=prometheus \
+          --set datasources."datasources\.yaml".datasources[0].url=http://prometheus-server.monitoring.svc.cluster.local \
+          --set datasources."datasources\.yaml".datasources[0].access=proxy \
+          --set datasources."datasources\.yaml".datasources[0].isDefault=true \
+          --set dashboardProviders."dashboardproviders\.yaml".apiVersion=1 \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].name=default \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].orgId=1 \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].folder="" \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].type=file \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].disableDeletion=false \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].editable=true \
+          --set dashboardProviders."dashboardproviders\.yaml".providers[0].options.path=/var/lib/grafana/dashboards/default
