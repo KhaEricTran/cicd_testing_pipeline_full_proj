@@ -8,10 +8,10 @@
     elb_name: a894facca31e7414a98522d544a27fbb
 
   tasks:
-    - name: Copy CloudWatch Agent Config Template
-      template:
-        src: cloudwatch-agent-config.json.j2
-        dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json.j2
+    - name: Copy CloudWatch Agent Config
+      copy:
+        src: files/cloudwatch-agent-config.json
+        dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 
     - name: Download CloudWatch Agent
       get_url:
@@ -28,11 +28,6 @@
       command: /tmp/install.sh
       args:
         chdir: /tmp/
-
-    - name: Configure CloudWatch Agent for EKS and ELB Monitoring
-      template:
-        src: cloudwatch-agent-config.json
-        dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 
     - name: Start CloudWatch Agent
       systemd:
