@@ -14,8 +14,6 @@
         name: docker
         state: latest
 
-    # ... other tasks for installing AWS CLI, kubectl ...
-
     - name: Install AWS CLI
       command: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       args:
@@ -35,6 +33,12 @@
 
     - name: Update kubeconfig for AWS EKS
       shell: aws eks update-kubeconfig --name {{ eks_cluster_name }} --region {{ aws_region }}
+    - name: Install necessary packages
+      yum:
+        name: docker
+        state: latest
+
+    # (Other tasks for AWS CLI and kubectl installation)
 
     - name: Start Docker service
       systemd:
@@ -42,16 +46,15 @@
         state: started
         enabled: yes
 
-    # ... tasks for cloning the repository and building Jenkins Docker image ...
-    - name: Start Docker service
-      systemd:
-        name: docker
-        state: started
-        enabled: yes
+    - name: Check if Docker Swarm is initialized
+      command: docker info --format '{{ "{{" }}.Swarm.LocalNodeState{{ "}}" }}'
+      register: swarm_state
+      changed_when: false
 
     - name: Initialize Docker Swarm
-      shell: docker swarm init
       ignore_errors: yes
+      command: docker swarm init
+      when: swarm_state.stdout != 'active'
 
     - name: Clone GitHub repository
       git:
@@ -70,16 +73,14 @@
       args:
         chdir: /var/lib/jenkins
 
-    - name: Run Jenkins container
-      docker_container:
-        name: jenkins
-        image: "{{ jenkins_repo_uri }}:latest"
-        state: started
-        restart_policy: always
-        ports:
-          - "8080:8080"
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
+    - name: Check for existing Jenkins Docker service
+      shell: docker service ls | grep jenkins
+      register: jenkins_service
+      ignore_errors: yes
+
+    - name: Remove existing Jenkins Docker service if exists
+      shell: docker service rm jenkins
+      when: jenkins_service.rc == 0
 
     - name: Deploy Jenkins as a Docker Swarm Service
       shell: |
