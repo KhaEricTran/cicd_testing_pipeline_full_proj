@@ -1,0 +1,93 @@
+---
+- name: Configure AWS EC2 instance for Jenkins Deployment with Docker Swarm
+  hosts: aws_ec2
+  become: yes
+  vars:
+    aws_region: us-east-1
+    eks_cluster_name: devops-eks-cluster
+    jenkins_repo_uri: 3750945/jenkins
+    git_repo: https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+
+  tasks:
+    - name: Install necessary packages
+      yum:
+        name: docker
+        state: latest
+
+    - name: Install AWS CLI
+      command: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      args:
+        creates: /usr/local/bin/aws
+
+    - name: Download kubectl
+      get_url:
+        url: "https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.3/2023-11-14/bin/linux/amd64/kubectl"
+        dest: "/tmp/kubectl"
+        mode: '0755'
+
+    - name: Make kubectl executable
+      command: chmod +x /tmp/kubectl
+
+    - name: Move kubectl to /usr/local/bin
+      command: mv /tmp/kubectl /usr/local/bin/kubectl
+
+    - name: Update kubeconfig for AWS EKS
+      shell: aws eks update-kubeconfig --name {{ eks_cluster_name }} --region {{ aws_region }}
+    - name: Install necessary packages
+      yum:
+        name: docker
+        state: latest
+
+    # (Other tasks for AWS CLI and kubectl installation)
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Check if Docker Swarm is initialized
+      command: docker info --format '{{ "{{" }}.Swarm.LocalNodeState{{ "}}" }}'
+      register: swarm_state
+      changed_when: false
+
+    - name: Initialize Docker Swarm
+      ignore_errors: yes
+      command: docker swarm init
+      when: swarm_state.stdout != 'active'
+
+    - name: Clone GitHub repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: /var/lib/jenkins
+        clone: yes
+        update: yes
+
+    - name: Build Jenkins Docker image
+      shell: |
+        docker build --build-arg DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3) -t jenkins .
+        docker tag jenkins:latest {{ jenkins_repo_uri }}:latest
+        docker push {{ jenkins_repo_uri }}:latest
+        yes | docker image prune -a
+        yes | docker volume prune -a
+      args:
+        chdir: /var/lib/jenkins
+
+    - name: Check for existing Jenkins Docker service
+      shell: docker service ls | grep -q jenkins
+      register: jenkins_service
+      failed_when: false
+      changed_when: false
+
+    - name: Remove existing Jenkins Docker service if exists
+      shell: docker service rm jenkins
+      ignore_errors: yes
+
+    - name: Deploy Jenkins as a Docker Swarm Service
+      shell: |
+        docker service create --name jenkins \ß
+          --publish 4000:8080 \
+          --mount type=bind,src=/var/lib/jenkins,dst=/var/jenkins_home \
+          "{{ jenkins_repo_uri }}:latest" || true
+      async: 1200  # 20 minutes timeout
+      poll: 0  # Run in background
