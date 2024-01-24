@@ -1,0 +1,17 @@
+# additional LoadBalancer service to watch metrics on the internet
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-loadbalancer
+  namespace: prometheus
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 9090
+  selector:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: prometheus
