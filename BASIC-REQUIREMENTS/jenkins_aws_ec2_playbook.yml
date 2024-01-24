@@ -86,7 +86,7 @@
     - name: Deploy Jenkins as a Docker Swarm Service
       shell: |
         docker service create --name jenkins \ß
-          --publish 4000:8080 \
+          --publish 8081:8080 \
           --mount type=bind,src=/var/lib/jenkins,dst=/var/jenkins_home \
           "{{ jenkins_repo_uri }}:latest" || true
       async: 1200  # 20 minutes timeout
