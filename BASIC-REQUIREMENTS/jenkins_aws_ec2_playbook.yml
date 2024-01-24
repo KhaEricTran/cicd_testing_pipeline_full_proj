@@ -74,13 +74,15 @@
         chdir: /var/lib/jenkins
 
     - name: Check for existing Jenkins Docker service
-      shell: docker service ls | grep jenkins
+      shell: docker service ls | grep -q jenkins
       register: jenkins_service
-      ignore_errors: yes
+      failed_when: false
+      changed_when: false
 
     - name: Remove existing Jenkins Docker service if exists
       shell: docker service rm jenkins
       when: jenkins_service.rc == 0
+      ignore_errors: yes
 
     - name: Deploy Jenkins as a Docker Swarm Service
       shell: |
@@ -88,3 +90,14 @@
           --publish 8081:8080 \
           --mount type=bind,src=/var/lib/jenkins,dst=/var/jenkins_home \
           "{{ jenkins_repo_uri }}:latest"
+      async: 120 # Run the task asynchronously for 120 seconds
+      poll: 15   # Check the task status every 15 seconds
+      register: jenkins_deployment
+
+    - name: Check deployment status
+      async_status:
+        jid: "{{ jenkins_deployment.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 5
+      delay: 15
