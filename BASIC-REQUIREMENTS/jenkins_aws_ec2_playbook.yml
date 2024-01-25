@@ -65,10 +65,11 @@
 
     - name: Build Jenkins Docker image
       shell: |
+        cd /var/lib/jenkins
         docker build --build-arg DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3) -t jenkins .
         docker tag jenkins:latest {{ jenkins_repo_uri }}:latest
       args:
-        chdir: /var/lib/jenkins
+        executable: /bin/bash
 
     - name: Run Jenkins as a Docker Container
       docker_container:
