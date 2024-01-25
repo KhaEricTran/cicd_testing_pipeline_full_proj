@@ -1,0 +1,50 @@
+---
+- name: Configure AWS EC2 instance for Jenkins Swarm Deployment
+  hosts: aws_ec2
+  become: yes
+  vars:
+    aws_region: us-east-1
+    eks_cluster_name: devops-eks-cluster
+    jenkins_repo_uri: 3750945/jenkins
+    git_repo: https://github.com/KhaEricTran/cicd_testing_pipeline_full_proj.git
+
+  tasks:
+    # (Include tasks for installing packages, AWS CLI, and kubectl)
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Check if Docker Swarm is initialized
+      command: docker info --format '{{ "{{" }}.Swarm.LocalNodeState{{ "}}" }}'
+      register: swarm_state
+      changed_when: false
+
+    - name: Initialize Docker Swarm
+      ignore_errors: yes
+      command: docker swarm init
+      when: swarm_state.stdout != 'active'
+
+    - name: Clone GitHub repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: /var/lib/jenkins
+        clone: yes
+        update: yes
+
+    - name: Build Jenkins Docker image
+      shell: |
+        docker build --build-arg DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3) -t jenkins .
+        docker tag jenkins:latest {{ jenkins_repo_uri }}:latest
+        docker push {{ jenkins_repo_uri }}:latest
+      args:
+        chdir: /var/lib/jenkins
+
+    - name: Deploy Jenkins as a Docker Swarm Service
+      shell: |
+        docker service create --name jenkins \
+          --publish 8081:8080 \
+          --mount type=bind,src=/var/lib/jenkins,dst=/var/jenkins_home \
+          "{{ jenkins_repo_uri }}:latest"
